@@ -1,6 +1,6 @@
 // ============================================
 // CHAT SYSTEM - Cộng Đồng Hỗ Trợ
-// Real-time chat với Firestore
+// Real-time chat với Firestore + feed cho khách
 // ============================================
 
 import { 
@@ -12,6 +12,7 @@ import {
     onSnapshot,
     updateDoc,
     doc,
+    getDoc,
     increment,
     serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -19,39 +20,65 @@ import { db } from './firebase-config.js';
 import { getCurrentUser } from './auth.js';
 import { addPoints } from './gamification.js';
 
+const GUEST_CHAT_FEED = [
+    {
+        userName: 'Thiền hữu Ẩn Danh',
+        message: 'Mình vừa thở 4-7-8 xong và cơn dục dịu hẳn. Cả nhà cứ kiên trì nhé!',
+        minutesAgo: 3,
+        streakDays: 14,
+        badges: ['👣', '⚔️']
+    },
+    {
+        userName: 'Huynh Tâm Hành',
+        message: 'Nhìn thẳng 32 thể trược giúp mình nhớ thân này vô thường. Chúc mọi người vững chãi.',
+        minutesAgo: 12,
+        streakDays: 45,
+        badges: ['💎']
+    },
+    {
+        userName: 'Ẩn sĩ Bắc Sơn',
+        message: 'Nếu thấy loạn tâm, hãy bấm Grounding 5-4-3-2-1. Mình đã vượt qua một đêm khó bằng cách ấy.',
+        minutesAgo: 25,
+        streakDays: 7,
+        badges: []
+    }
+];
+
 let chatUnsubscribe = null;
+let chatInputRef = null;
+let chatSendBtnRef = null;
+let chatGuestNoteRef = null;
 
 // Khởi tạo chat system
 export function initChatSystem() {
     const chatToggleBtn = document.getElementById('chat-toggle-btn');
     const chatCloseBtn = document.getElementById('chat-close-btn');
-    const chatSendBtn = document.getElementById('chat-send-btn');
-    const chatInput = document.getElementById('chat-input');
-    const chatPanel = document.getElementById('chat-panel');
+    chatSendBtnRef = document.getElementById('chat-send-btn');
+    chatInputRef = document.getElementById('chat-input');
+    chatGuestNoteRef = document.getElementById('chat-guest-note');
     
     if (chatToggleBtn) {
-        chatToggleBtn.addEventListener('click', () => {
-            toggleChat();
-        });
+        chatToggleBtn.addEventListener('click', () => toggleChat());
     }
     
     if (chatCloseBtn) {
-        chatCloseBtn.addEventListener('click', () => {
-            hideChat();
-        });
+        chatCloseBtn.addEventListener('click', () => hideChat());
     }
     
-    if (chatSendBtn && chatInput) {
-        chatSendBtn.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', (e) => {
+    if (chatSendBtnRef && chatInputRef) {
+        chatSendBtnRef.addEventListener('click', sendMessage);
+        chatInputRef.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         });
     }
     
-    // Load messages
-    loadMessages();
+    window.addEventListener('auth-state-changed', (event) => {
+        handleChatAccess(event.detail.isLoggedIn);
+    });
+    
+    handleChatAccess(!!getCurrentUser());
 }
 
 // Toggle chat
@@ -78,18 +105,16 @@ function loadMessages() {
     const messagesRef = collection(db, 'chat');
     const q = query(messagesRef, orderBy('timestamp', 'desc'), limit(50));
     
-    // Unsubscribe previous listener
     if (chatUnsubscribe) {
         chatUnsubscribe();
     }
     
     chatUnsubscribe = onSnapshot(q, (snapshot) => {
         const messages = [];
-        snapshot.forEach((doc) => {
-            messages.push({ id: doc.id, ...doc.data() });
+        snapshot.forEach((docSnapshot) => {
+            messages.push({ id: docSnapshot.id, ...docSnapshot.data() });
         });
         
-        // Reverse để hiển thị từ cũ đến mới
         messages.reverse();
         displayMessages(messages);
     }, (error) => {
@@ -98,14 +123,14 @@ function loadMessages() {
 }
 
 // Hiển thị messages
-function displayMessages(messages) {
+function displayMessages(messages, isGuestFeed = false) {
     const messagesContainer = document.getElementById('chat-messages');
     if (!messagesContainer) return;
     
     messagesContainer.innerHTML = '';
     
     messages.forEach(message => {
-        const messageElement = createMessageElement(message);
+        const messageElement = createMessageElement(message, isGuestFeed);
         messagesContainer.appendChild(messageElement);
     });
     
@@ -114,7 +139,7 @@ function displayMessages(messages) {
 }
 
 // Tạo message element
-function createMessageElement(message) {
+function createMessageElement(message, isGuestFeed = false) {
     const user = getCurrentUser();
     const isOwnMessage = user && message.userId === user.uid;
     
@@ -133,6 +158,13 @@ function createMessageElement(message) {
         badgesHTML = message.badges.map(badge => `<span class="badge-icon">${badge}</span>`).join('');
     }
     
+    const likesTemplate = isGuestFeed ? '' : `
+        <div class="message-likes ${message.likedBy && message.likedBy.includes(user?.uid) ? 'liked' : ''}" 
+             data-message-id="${message.id}" 
+             data-likes="${message.likes || 0}">
+            ❤️ ${message.likes || 0}
+        </div>`;
+    
     messageDiv.innerHTML = `
         <div class="message-header">
             <span class="message-username">${escapeHtml(message.userName || 'Người dùng')}</span>
@@ -142,17 +174,13 @@ function createMessageElement(message) {
         <div class="message-text">${escapeHtml(message.message)}</div>
         <div class="message-footer">
             <span>${timeString}</span>
-            <div class="message-likes ${message.likedBy && message.likedBy.includes(user?.uid) ? 'liked' : ''}" 
-                 data-message-id="${message.id}" 
-                 data-likes="${message.likes || 0}">
-                ❤️ ${message.likes || 0}
-            </div>
+            ${likesTemplate}
         </div>
     `;
     
     // Like button
     const likeButton = messageDiv.querySelector('.message-likes');
-    if (likeButton && !isOwnMessage) {
+    if (likeButton && !isOwnMessage && !isGuestFeed) {
         likeButton.addEventListener('click', () => {
             likeMessage(message.id, message.userId);
         });
@@ -175,8 +203,7 @@ async function sendMessage() {
         return;
     }
     
-    const input = document.getElementById('chat-input');
-    const message = input?.value.trim();
+    const message = chatInputRef?.value.trim();
     
     if (!message) return;
     
@@ -188,7 +215,6 @@ async function sendMessage() {
     
     try {
         // Load user data để lấy streak và badges
-        const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         const userData = userDoc.data();
         
@@ -205,7 +231,7 @@ async function sendMessage() {
         });
         
         // Clear input
-        input.value = '';
+        chatInputRef.value = '';
         
         // Thêm points cho việc chat khuyến khích
         addPoints(20, 'chat_encouragement');
@@ -296,5 +322,44 @@ export function cleanupChat() {
         chatUnsubscribe();
         chatUnsubscribe = null;
     }
+}
+
+function handleChatAccess(isLoggedIn) {
+    if (isLoggedIn) {
+        setChatInputState(true);
+        loadMessages();
+    } else {
+        setChatInputState(false);
+        cleanupChat();
+        displayGuestFeed();
+    }
+}
+
+function setChatInputState(enabled) {
+    if (chatInputRef) {
+        chatInputRef.disabled = !enabled;
+        chatInputRef.placeholder = enabled ? 'Nhắn tin khuyến khích mọi người...' : 'Đăng nhập để gửi lời nhắn của bạn...';
+    }
+    
+    if (chatSendBtnRef) {
+        chatSendBtnRef.disabled = !enabled;
+    }
+    
+    if (chatGuestNoteRef) {
+        chatGuestNoteRef.classList.toggle('hidden', enabled);
+    }
+}
+
+function displayGuestFeed() {
+    const mapped = GUEST_CHAT_FEED.map((item, index) => ({
+        ...item,
+        id: `guest_${index}`,
+        isGuest: true,
+        timestamp: {
+            toDate: () => new Date(Date.now() - (item.minutesAgo || 5) * 60000)
+        }
+    }));
+    
+    displayMessages(mapped, true);
 }
 

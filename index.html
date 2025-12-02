@@ -141,13 +141,17 @@
 
         <div id="simple-mode-panel" class="simple-mode-panel">
             <div class="simple-hero">
-                <div>
-                    <h1>Hít sâu, thả lỏng, con đang an toàn.</h1>
-                    <p>Chọn một hành động đơn giản để đưa tâm trở về và làm dịu cơn nghiện.</p>
+                <div class="simple-hero-text">
+                    <h1>Chọn Thiền 32 Thể Trược trước tiên, rồi thở và thả.</h1>
+                    <p>Ưu tiên nhìn thẳng vào sự thật của thân này để tâm buông chấp ngay lúc cơn nghiện nổi lên.</p>
+                    <div id="inline-dharma-quote" class="inline-dharma-quote">
+                        <p class="quote">Ái dục sinh sầu, sinh sợ; thoát ái dục không sầu không sợ.</p>
+                        <p class="source">— Kinh Pháp Cú 216</p>
+                    </div>
                 </div>
                 <div class="simple-breathing">
-                    <button class="calm-action primary" data-quick-game="breathing">💨 Thở 60 giây</button>
-                    <button class="calm-action" data-quick-game="meditation-32">🧘 Quán 32 thể trược</button>
+                    <button class="calm-action primary" data-quick-game="meditation-32">🧘 Quán 32 thể trược ngay</button>
+                    <button class="calm-action" data-quick-game="breathing">💨 Thở sâu 60 giây</button>
                     <button class="calm-action" data-quick-therapy="grounding">🌍 Grounding 5-4-3-2-1</button>
                 </div>
             </div>
@@ -242,6 +246,32 @@
                 <h4>🏆 Bảng Xếp Hạng Công Khai</h4>
                 <div id="public-leaderboard"></div>
             </div>
+            <div class="feedback-section">
+                <h4>🙏 Góp Ý Tàm Quý &amp; Viết Thư Cho Nhà Phát Triển</h4>
+                <p>Hãy gửi lời nhắn với tâm cung kính: góp ý, tri ân hay báo lỗi đều giúp cộng đồng thuần tịnh hơn.</p>
+                <form id="feedback-form" class="feedback-form">
+                    <div class="form-row">
+                        <input type="text" name="name" placeholder="Pháp danh / nickname" required>
+                        <input type="email" name="email" placeholder="Email (tùy chọn)">
+                    </div>
+                    <select name="topic" required>
+                        <option value="">Chọn chủ đề</option>
+                        <option value="loi-khuyen">Lời khuyên / góp ý</option>
+                        <option value="loi-cam-on">Lời cảm ơn / tri ân</option>
+                        <option value="bao-loi">Báo lỗi / sự cố</option>
+                        <option value="goi-y-chuc-nang">Gợi ý chức năng mới</option>
+                    </select>
+                    <textarea name="message" rows="4" placeholder="Viết thư thật lòng (Thầy lắng nghe mọi tâm sự)..." required></textarea>
+                    <label class="tam-quy-vow">
+                        <input type="checkbox" name="vow" required>
+                        <span>Tôi xin hứa góp ý với tâm tàm &amp; quý, không dùng lời ác khẩu.</span>
+                    </label>
+                    <div class="feedback-actions">
+                        <button type="submit" class="btn-primary">📨 Gửi thư</button>
+                        <span id="feedback-status" class="feedback-status"></span>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Bottom UI -->
@@ -260,6 +290,9 @@
                 <h3>Cộng Đồng Hỗ Trợ</h3>
                 <button id="chat-close-btn" class="close-btn">&times;</button>
             </div>
+            <p id="chat-guest-note" class="chat-guest-note hidden">
+                🌱 Đăng nhập để nhắn tin thực tế. Tạm thời con vẫn có thể đọc những lời nhắc đã được cộng đồng tuyển chọn.
+            </p>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-container">
                 <input type="text" id="chat-input" placeholder="Nhắn tin khuyến khích mọi người..." maxlength="500">
@@ -277,9 +310,19 @@
                         <p>Xin chào con! Thầy Thích Nhất Hạnh ở đây để giúp con vượt qua cơn cuồng dục này. Hãy chia sẻ với thầy con đang cảm thấy thế nào?</p>
                     </div>
                 </div>
+                <div id="ai-guest-note" class="ai-guest-note hidden">
+                    🔐 Đăng nhập để nhận lời đáp riêng từ Thầy. Trong lúc chờ, hãy chọn kịch bản thực tập nhanh bên dưới.
+                </div>
                 <div class="ai-input-container">
                     <textarea id="ai-input" placeholder="Viết tin nhắn của bạn..." rows="3"></textarea>
                     <button id="ai-send-btn" class="btn-primary">Gửi</button>
+                </div>
+                <div class="ai-playbooks">
+                    <div class="ai-playbooks-header">
+                        <p>⚡ Kịch bản thực tập nhanh:</p>
+                        <small>Chọn để ngay lập tức nhận lời hướng dẫn đã được Thầy biên soạn.</small>
+                    </div>
+                    <div id="ai-playbook-buttons" class="playbook-buttons"></div>
                 </div>
                 <div class="ai-suggestions">
                     <p>Hoặc thử một trong những mini-games này để phân tâm:</p>

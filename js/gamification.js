@@ -94,6 +94,9 @@ export const BADGES = {
     HELPER: { id: 'helper', name: 'Người Giúp Đỡ', icon: '🤝' }
 };
 
+const CELEBRATION_COOLDOWN = 6000;
+let lastConfettiTime = 0;
+
 // Thêm points
 export async function addPoints(points, activityType = 'general') {
     const user = getCurrentUser();
@@ -175,54 +178,65 @@ function calculateLevel(points) {
 // Cập nhật daily check-in
 export async function updateDailyCheckIn() {
     const user = getCurrentUser();
+    const now = new Date();
     
     if (user) {
-        // User đã đăng nhập
         try {
             const userRef = doc(db, 'users', user.uid);
             const userDoc = await getDoc(userRef);
             
             if (userDoc.exists()) {
                 const currentData = userDoc.data();
+                const lastCheckIn = currentData.lastCheckIn?.toDate ? currentData.lastCheckIn.toDate() : currentData.lastCheckIn ? new Date(currentData.lastCheckIn) : null;
                 const currentStreak = currentData.streakDays || 0;
-                const newStreak = currentStreak + 1;
+                
+                if (lastCheckIn && isSameDay(lastCheckIn, now)) {
+                    return { success: false, alreadyChecked: true, streak: currentStreak };
+                }
+                
+                const yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const continuedStreak = lastCheckIn && isSameDay(lastCheckIn, yesterday);
+                const newStreak = continuedStreak ? currentStreak + 1 : 1;
                 const longestStreak = Math.max(newStreak, currentData.longestStreak || 0);
                 
                 await updateDoc(userRef, {
                     streakDays: newStreak,
-                    longestStreak: longestStreak,
+                    longestStreak,
                     lastCheckIn: serverTimestamp()
                 });
                 
-                // Thêm points cho check-in
                 await addPoints(100, 'checkIn');
-                
-                // Cập nhật UI
                 updateStreakUI(newStreak);
                 
-            // Kiểm tra achievements dựa trên streak
-            await checkStreakAchievements(user.uid, newStreak);
-            
-            // Kiểm tra milestones
-            if (checkMilestoneDays(newStreak)) {
-                // Milestone celebration đã được hiển thị trong honor-system.js
-            }
-            
-            return { success: true, streak: newStreak };
+                await checkStreakAchievements(user.uid, newStreak);
+                checkMilestoneDays(newStreak);
+                
+                if (window.userData) {
+                    window.userData.streakDays = newStreak;
+                    window.userData.longestStreak = longestStreak;
+                    window.userData.lastCheckIn = now;
+                }
+                
+                return { success: true, streak: newStreak };
             }
         } catch (error) {
             console.error('Lỗi update check-in:', error);
             return { success: false, error: error.message };
         }
     } else {
-        // Guest user
-        const guestData = updateGuestStreak();
-        updateStreakUI(guestData.streakDays);
+        const guestResult = updateGuestStreak();
+        const { data, alreadyChecked } = guestResult;
+        updateStreakUI(data.streakDays);
         
-        // Kiểm tra achievements
-        checkGuestStreakAchievements(guestData.streakDays);
+        if (alreadyChecked) {
+            return { success: false, alreadyChecked: true, streak: data.streakDays };
+        }
         
-        return { success: true, streak: guestData.streakDays };
+        checkGuestStreakAchievements(data.streakDays);
+        checkMilestoneDays(data.streakDays);
+        
+        return { success: true, streak: data.streakDays };
     }
 }
 
@@ -438,7 +452,7 @@ function showLevelUpNotification(level) {
 }
 
 // Hiển thị encouragement message
-export function showEncouragementMessage(message) {
+export function showEncouragementMessage(message, options = {}) {
     // Tạo temporary notification
     const notification = document.createElement('div');
     notification.style.position = 'fixed';
@@ -461,6 +475,18 @@ export function showEncouragementMessage(message) {
         notification.style.animation = 'fadeOut 0.5s ease';
         setTimeout(() => notification.remove(), 500);
     }, 3000);
+    
+    const shouldCelebrate = options.celebrate !== undefined
+        ? options.celebrate
+        : /tuyệt vời|CHÚC MỪNG|chiến thắng/i.test(message);
+    
+    if (shouldCelebrate) {
+        const now = Date.now();
+        if (now - lastConfettiTime > CELEBRATION_COOLDOWN) {
+            createConfetti();
+            lastConfettiTime = now;
+        }
+    }
 }
 
 // Cập nhật UI
@@ -506,6 +532,12 @@ function animateNumberChange(element, oldValue, newValue) {
     }
     
     update();
+}
+
+function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
 }
 
 // Export để sử dụng ở file khác

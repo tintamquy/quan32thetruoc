@@ -13,6 +13,26 @@ const THE_32_PARTS = [
     'tim', 'toc', 'vat-trong-bao-tu', 'xuong-tuy', 'xuong'
 ];
 
+const PART_NAMES = [
+    'Bộ não', 'Cổ thành ruột', 'Da', 'Đàm', 'Đầu da', 'Gan (liver)', 'Gan', 'Lá lách', 'Lông',
+    'Màng ruột', 'Mắt', 'Máu', 'Mồ hôi', 'Mỡ', 'Móng', 'Mủ', 'Nước khớp xương', 'Nước mắt',
+    'Nước miệng', 'Nước mũi', 'Nước tiểu', 'Phân', 'Phổi', 'Răng', 'Ruột', 'Thận', 'Thịt',
+    'Tim', 'Tóc', 'Vật trong bao tử', 'Xương tủy', 'Xương'
+];
+
+const WARNING_QUOTES = [
+    '“Ái dục sinh sầu, sinh sợ. Thoát ái dục, không sầu không sợ.” — Pháp Cú 216',
+    '“Ái dục như món mồi ngọt tẩm độc. Người trí thấy rõ liền buông.” — Trung A-hàm',
+    '“Quán bất tịnh, tâm lìa khát ái, mùi hương giải thoát theo đó mà lan.” — Kinh Quán Niệm Thân'
+];
+
+const STAGE_PROMPTS = [
+    'Nhận diện phần thân này chỉ là hợp của đất nước gió lửa.',
+    'Quán sát sự hoại diệt: mọi phần rồi cũng tan rã, không có gì đáng bám víu.',
+    'Thấy rõ ái dục nào đang bám chặt vào phần thân này và dịu dàng buông xuống.',
+    'Phát khởi tâm từ bi với chính mình, hẹn lòng sẽ sử dụng năng lượng này cho lý tưởng cao đẹp.'
+];
+
 let currentPartIndex = 0;
 let gameStarted = false;
 let meditationTime = 0;
@@ -116,16 +136,16 @@ function loadPart(index) {
 // Cập nhật hướng dẫn
 function updateGuidance(index) {
     const guidanceElement = document.getElementById('meditation-guidance');
-    const partNames = [
-        'Bộ não', 'Cổ thành ruột', 'Da', 'Đàm', 'Đầu da', 'Gan (liver)', 'Gan', 'Lá lách', 'Lông',
-        'Màng ruột', 'Mắt', 'Máu', 'Mồ hôi', 'Mỡ', 'Móng', 'Mủ', 'Nước khớp xương', 'Nước mắt',
-        'Nước miệng', 'Nước mũi', 'Nước tiểu', 'Phân', 'Phổi', 'Răng', 'Ruột', 'Thận', 'Thịt',
-        'Tim', 'Tóc', 'Vật trong bao tử', 'Xương tủy', 'Xương'
-    ];
+    if (!guidanceElement) return;
     
-    const partName = partNames[index] || `Phần ${index + 1}`;
-    const text = `Quán sát ${partName.toLowerCase()}, nhận thức sự bất tịnh của cơ thể. Hãy tập trung và quan sát một cách tỉnh giác.`;
-    guidanceElement.innerHTML = `<p>${text}</p>`;
+    const partName = PART_NAMES[index] || `Phần ${index + 1}`;
+    const stage = Math.min(STAGE_PROMPTS.length - 1, Math.floor(index / 8));
+    const warning = WARNING_QUOTES[stage % WARNING_QUOTES.length];
+    
+    guidanceElement.innerHTML = `
+        <p class="guidance-main">• ${partName}: ${STAGE_PROMPTS[stage]}</p>
+        <p class="guidance-warning">${warning}</p>
+    `;
 }
 
 // Phần tiếp theo
@@ -186,7 +206,9 @@ function startTimer() {
 function speakGuidance(index) {
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance();
-        utterance.text = `Quán sát phần ${index + 1}, nhận thức sự bất tịnh của cơ thể. Hãy tập trung và quan sát.`;
+        const partName = PART_NAMES[index] || `phần ${index + 1}`;
+        const stage = Math.min(STAGE_PROMPTS.length - 1, Math.floor(index / 8));
+        utterance.text = `${STAGE_PROMPTS[stage]}. Đang quán ${partName.toLowerCase()}, thấy rõ vô thường, bất tịnh, và buông bỏ ái dục.`;
         utterance.lang = 'vi-VN';
         utterance.rate = 0.8;
         speechSynthesis.speak(utterance);

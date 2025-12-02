@@ -32,6 +32,13 @@ body {
     width: 100vw;
 }
 
+body.simple-mode {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+
 /* Loading Screen */
 .loading-screen {
     position: fixed;
@@ -83,6 +90,13 @@ body {
     overflow: hidden;
 }
 
+body.simple-mode #game-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+    padding-top: 110px;
+}
+
 /* Canvas */
 #game-canvas {
     width: 100%;
@@ -107,6 +121,12 @@ body {
     z-index: 1000;
     border-bottom: 2px solid var(--gold-color);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+body.simple-mode .top-ui-bar {
+    position: sticky;
+    left: auto;
+    right: auto;
 }
 
 .streak-counter {

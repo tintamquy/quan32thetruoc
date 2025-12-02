@@ -39,6 +39,14 @@
     font-size: 20px;
 }
 
+.chat-guest-note {
+    font-size: 13px;
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
 .close-btn {
     background: none;
     border: none;
@@ -164,6 +172,11 @@
     border-color: var(--gold-color);
 }
 
+#chat-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .btn-send {
     padding: 10px 20px;
     background: var(--accent-color);
@@ -178,6 +191,12 @@
 .btn-send:hover {
     background: var(--secondary-color);
     transform: scale(1.05);
+}
+
+.btn-send:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* AI Counselor Modal */
@@ -248,6 +267,71 @@
 
 #ai-input:focus {
     outline: none;
+    border-color: var(--gold-color);
+}
+
+#ai-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ai-guest-note {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+    color: #ffecb3;
+    margin-bottom: 12px;
+}
+
+.ai-playbooks {
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ai-playbooks-header {
+    margin-bottom: 10px;
+}
+
+.ai-playbooks-header small {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.playbook-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.playbook-button {
+    flex: 1 1 45%;
+    min-width: 180px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.playbook-button h5 {
+    margin-bottom: 6px;
+    color: var(--gold-color);
+    font-size: 15px;
+}
+
+.playbook-button p {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.playbook-button:hover {
+    transform: translateY(-2px);
     border-color: var(--gold-color);
 }
 
@@ -637,6 +721,18 @@
     color: var(--text-light);
     font-size: 18px;
     line-height: 1.6;
+}
+
+.meditation-guidance .guidance-main {
+    font-weight: 600;
+}
+
+.meditation-guidance .guidance-warning {
+    margin-top: 8px;
+    font-size: 14px;
+    opacity: 0.85;
+    font-style: italic;
+    color: #ffecb3;
 }
 
 .meditation-progress {
@@ -1056,6 +1152,88 @@ body.immersive-mode .side-panel {
     gap: 16px;
 }
 
+.feedback-section {
+    grid-column: 1 / -1;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.feedback-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.feedback-form input,
+.feedback-form select,
+.feedback-form textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
+    font-family: inherit;
+}
+
+.feedback-form input:focus,
+.feedback-form select:focus,
+.feedback-form textarea:focus {
+    border-color: var(--gold-color);
+    outline: none;
+}
+
+.feedback-form textarea {
+    resize: vertical;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.form-row input {
+    flex: 1;
+    min-width: 180px;
+}
+
+.tam-quy-vow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.tam-quy-vow input {
+    width: auto;
+}
+
+.feedback-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.feedback-status {
+    font-size: 14px;
+    min-height: 18px;
+    color: #ffecb3;
+}
+
+.feedback-status.success {
+    color: #8bc34a;
+}
+
+.feedback-status.error {
+    color: #ff8a80;
+}
+
 .simple-card {
     padding: 18px;
     border-radius: 16px;
@@ -1136,5 +1314,118 @@ body.immersive-mode .side-panel {
     .simple-breathing {
         justify-content: flex-start;
     }
+}
+
+.simple-hero-text {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.inline-dharma-quote {
+    background: rgba(255, 255, 255, 0.08);
+    border-left: 3px solid #ffb74d;
+    padding: 12px 16px;
+    border-radius: 12px;
+}
+
+.inline-dharma-quote .quote {
+    font-style: italic;
+    margin-bottom: 6px;
+}
+
+.inline-dharma-quote .source {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.simple-card strong {
+    color: #fff;
+}
+
+.simple-card ul li {
+    margin-bottom: 4px;
+}
+
+.simple-card ul li:last-child {
+    margin-bottom: 0;
+}
+
+.simple-card p + button {
+    margin-top: 8px;
+}
+
+body.immersive-mode #simple-mode-panel {
+    display: none;
+}
+
+body.immersive-mode .experience-toggle {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    margin: 0;
+    width: auto;
+    z-index: 900;
+    max-width: 260px;
+}
+
+body.immersive-mode .experience-toggle .toggle-hint {
+    display: none;
+}
+
+.dharma-popup {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    max-width: 360px;
+    background: rgba(17, 17, 34, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+    animation: popup-slide 0.4s ease;
+    z-index: 1200;
+}
+
+.dharma-popup h4 {
+    margin-bottom: 10px;
+    color: #ffd54f;
+}
+
+.dharma-popup p {
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.dharma-popup .popup-source {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dharma-popup .popup-close {
+    margin-top: 12px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.dharma-popup .popup-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes popup-slide {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dharma-popup.fade-out {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 

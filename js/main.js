@@ -6,7 +6,7 @@ import { initAuth, getCurrentUser } from './auth.js';
 import { initGameEngine } from './game-engine.js';
 import { initAICounselor, showAICounselor } from './ai-counselor.js';
 import { initChatSystem, cleanupChat } from './chat-system.js';
-import { updateDailyCheckIn } from './gamification.js';
+import { updateDailyCheckIn, showEncouragementMessage } from './gamification.js';
 import { initMeditationGame } from './mini-games/meditation-game.js';
 import { initMemoryGame } from './mini-games/memory-game.js';
 import { initBreathingGame } from './mini-games/breathing-game.js';
@@ -18,6 +18,8 @@ import { initColorMatchGame } from './mini-games/color-match-game.js';
 import { loadPublicLeaderboard, startLeaderboardAutoRefresh } from './public-leaderboard.js';
 import { initUrgeSurfing, initGroundingTechnique } from './therapy-tools.js';
 import { showRelapsePreventionPlan, showEmergencyProtocol } from './relapse-prevention.js';
+import { initDharmaQuotes } from './dharma-quotes.js';
+import { initFeedbackForm } from './feedback.js';
 
 // Game handlers
 const gameHandlers = {
@@ -55,6 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Khởi tạo chat system
     initChatSystem();
+    
+    // Góp ý tàm quý
+    initFeedbackForm();
+    
+    // Kinh cảnh tỉnh
+    initDharmaQuotes();
     
     // Load public leaderboard
     loadPublicLeaderboard();
@@ -139,7 +147,7 @@ function setupSimpleModeActions() {
             } else {
                 const authModal = document.getElementById('auth-modal');
                 if (authModal) authModal.classList.remove('hidden');
-                alert('Đăng nhập để Thầy có thể đồng hành cùng bạn một cách an toàn.');
+                showEncouragementMessage('Đăng nhập để Thầy có thể đồng hành cùng bạn một cách an toàn.', { celebrate: false });
             }
         });
     }
@@ -411,6 +419,10 @@ function setupCheckInModal() {
                 if (modal) {
                     modal.classList.add('hidden');
                 }
+            } else if (result.alreadyChecked) {
+                const modal = document.getElementById('checkin-modal');
+                if (modal) modal.classList.add('hidden');
+                showEncouragementMessage('Hôm nay bạn đã ghi nhận chiến thắng rồi. Hãy quay lại sau bình minh mới.', { celebrate: false });
             }
         });
     }

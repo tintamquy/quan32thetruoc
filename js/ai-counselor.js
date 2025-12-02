@@ -10,11 +10,36 @@ import { db } from './firebase-config.js';
 // URL của Cloudflare Worker
 const WORKER_URL = 'https://gemini-proxy.phatda.workers.dev';
 
+const COUNSELING_PLAYBOOKS = [
+    {
+        id: 'breath-anchor',
+        title: 'Thở 4-7-8 & chạm đất',
+        description: 'Tập trung vào hơi thở, chạm tay lên tim để ổn định.',
+        response: `Con hãy đặt tay lên tim và bụng. Hít vào 4 nhịp, giữ 7 nhịp, thở ra 8 nhịp. Khi thở ra hãy thầm nói “Con đang trở về nhà”. Sau ba vòng thở, con nhìn quanh và gọi tên 5 điều đang bảo hộ mình. Cơn sóng dục sẽ tự tan như mây.`,
+        prefill: 'Con đang thực tập thở 4-7-8 như Thầy chỉ.'
+    },
+    {
+        id: 'thirtytwo-reminder',
+        title: 'Quán 32 thể trược',
+        description: 'Nhắc lại tiến trình quán thân bất tịnh.',
+        response: `Con hãy mở Thiền 32 Thể Trược. Bắt đầu từ mái tóc, da đầu, rồi đến máu, mật, gan… Nhìn thân này như một dòng chảy hợp tan. Khi thấy rõ thân bất tịnh thì ái dục tự lắng xuống. Thầy đang đi cùng con từng phần một.`,
+        prefill: 'Con sẽ quán 32 thể trược để buông dứt ái dục.'
+    },
+    {
+        id: 'urge-surfing',
+        title: 'Nương sóng dục',
+        description: '3 bước Urge Surfing để không bị cuốn đi.',
+        response: `1) Nhận diện: “Xin chào dục vọng, Thầy thấy con”. 2) Thở và theo dõi cảm giác trong thân như người quan sát sóng biển. 3) Đặt câu hỏi: “Nếu con chiều theo dục vọng này, con sẽ đánh mất điều gì?”. Trả lời bằng lòng từ bi dành cho chính mình.`,
+        prefill: 'Con đang thực tập Urge Surfing, xin Thầy nhắc con.'
+    }
+];
+
 let conversationHistory = [];
 let aiCooldownUntil = 0;
 let aiSendBtnRef = null;
 let aiInputRef = null;
 let isSendingAI = false;
+let isGuestScriptMode = false;
 
 // Khởi tạo AI counselor
 export function initAICounselor() {
@@ -30,10 +55,10 @@ export function initAICounselor() {
         emergencyBtn.addEventListener('click', () => {
             const user = getCurrentUser();
             if (!user) {
-                // Chưa đăng nhập - yêu cầu đăng nhập để chat với thầy
+                showAICounselor({ guestMode: true });
                 showLoginPromptForAICounselor();
             } else {
-                showAICounselor();
+                showAICounselor({ guestMode: false });
             }
         });
     }
@@ -54,6 +79,8 @@ export function initAICounselor() {
         });
     }
     
+    renderPlaybookButtons();
+    
     // Suggestion buttons
     const suggestionButtons = document.querySelectorAll('.suggestion-btn');
     suggestionButtons.forEach(btn => {
@@ -69,6 +96,8 @@ export function initAICounselor() {
             }
         });
     });
+    
+    attachPlaybookHandlers();
 }
 
 // Hiển thị prompt đăng nhập
@@ -83,10 +112,12 @@ function showLoginPromptForAICounselor() {
 }
 
 // Hiển thị AI counselor
-function showAICounselor() {
+function showAICounselor(options = {}) {
     const modal = document.getElementById('ai-counselor-modal');
     if (modal) {
         modal.classList.remove('hidden');
+        isGuestScriptMode = !!options.guestMode;
+        setAIGuestMode(isGuestScriptMode);
         
         // Update title
         const title = modal.querySelector('h2');
@@ -96,9 +127,17 @@ function showAICounselor() {
         
         // Reset conversation
         conversationHistory = [];
+        const chatContainer = document.getElementById('ai-chat-container');
+        if (chatContainer) {
+            chatContainer.innerHTML = '';
+        }
         
         // Add initial message
-        addAIMessage('Xin chào con! Thầy Thích Nhất Hạnh ở đây để giúp con vượt qua cơn cuồng dục này. Hãy chia sẻ với thầy con đang cảm thấy thế nào?', 'ai');
+        if (isGuestScriptMode) {
+            addAIMessage('Con có thể bấm vào một kịch bản bên dưới để nhận hướng dẫn tức thì. Khi con sẵn sàng đăng nhập, Thầy sẽ lắng nghe trực tiếp.', 'ai');
+        } else {
+            addAIMessage('Xin chào con! Thầy Thích Nhất Hạnh đang ở đây. Hãy chia sẻ với Thầy con đang cảm thấy thế nào?', 'ai');
+        }
     }
 }
 
@@ -118,6 +157,12 @@ async function sendAIMessage() {
     const message = input?.value.trim();
     
     if (!message) return;
+    
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        addAIMessage('Đăng nhập để Thầy có thể hồi đáp trực tiếp. Trong lúc chờ, hãy chọn kịch bản thực tập nhanh.', 'ai');
+        return;
+    }
     
     const now = Date.now();
     if (now < aiCooldownUntil) {
@@ -162,6 +207,11 @@ async function sendAIMessage() {
             addAIMessage(`Thầy đang nhận rất nhiều lời cầu cứu. Con hãy đặt tay lên ngực, hít sâu và thử lại sau ${waitSeconds}s.`, 'ai');
         } else {
             addAIMessage('Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại sau hoặc thử một mini-game để phân tâm.', 'ai');
+        }
+        
+        if (!isGuestScriptMode) {
+            addAIMessage('Trong lúc đợi kết nối, con hãy thực tập theo hướng dẫn này nhé:', 'ai');
+            playCounselingScript('breath-anchor', { trigger: 'fallback' });
         }
     } finally {
         if (aiSendBtnRef) aiSendBtnRef.disabled = false;
@@ -303,6 +353,63 @@ function typewriterEffect(element, text) {
     type();
 }
 
+function renderPlaybookButtons() {
+    const container = document.getElementById('ai-playbook-buttons');
+    if (!container) return;
+    
+    container.innerHTML = COUNSELING_PLAYBOOKS.map(script => `
+        <button class="playbook-button" data-script-id="${script.id}">
+            <h5>${script.title}</h5>
+            <p>${script.description}</p>
+        </button>
+    `).join('');
+}
+
+function attachPlaybookHandlers() {
+    const buttons = document.querySelectorAll('[data-script-id]');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            playCounselingScript(btn.dataset.scriptId);
+        });
+    });
+}
+
+function playCounselingScript(scriptId, options = {}) {
+    const script = COUNSELING_PLAYBOOKS.find(item => item.id === scriptId);
+    if (!script) return;
+    
+    addAIMessage(script.response, 'ai');
+    conversationHistory.push({
+        role: 'model',
+        parts: [{ text: script.response }]
+    });
+    
+    if (script.prefill && aiInputRef && !isGuestScriptMode) {
+        aiInputRef.value = script.prefill;
+        aiInputRef.focus();
+    }
+    
+    if (!options.skipLog) {
+        logAIConversation(`Playbook:${script.title}`, script.response);
+    }
+}
+
+function setAIGuestMode(isGuest) {
+    if (aiInputRef) {
+        aiInputRef.disabled = isGuest;
+        aiInputRef.placeholder = isGuest ? 'Đăng nhập để gửi câu hỏi riêng...' : 'Viết tin nhắn của bạn...';
+    }
+    
+    if (aiSendBtnRef) {
+        aiSendBtnRef.disabled = isGuest;
+    }
+    
+    const guestNote = document.getElementById('ai-guest-note');
+    if (guestNote) {
+        guestNote.classList.toggle('hidden', !isGuest);
+    }
+}
+
 // Ghi log conversation vào Firestore
 async function logAIConversation(userMessage, aiResponse) {
     try {
@@ -322,6 +429,11 @@ async function logAIConversation(userMessage, aiResponse) {
 
 // Export
 export { showAICounselor, hideAICounselor };
+
+if (typeof window !== 'undefined') {
+    window.showAICounselor = (options) => showAICounselor(options);
+    window.hideAICounselor = () => hideAICounselor();
+}
 
 function waitFor(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));

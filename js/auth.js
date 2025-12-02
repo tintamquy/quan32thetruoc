@@ -67,6 +67,10 @@ function updateAuthUIButtons(isLoggedIn) {
         if (profileBtn) profileBtn.classList.add('hidden');
         if (logoutBtn) logoutBtn.classList.add('hidden');
     }
+    
+    window.dispatchEvent(new CustomEvent('auth-state-changed', {
+        detail: { isLoggedIn }
+    }));
 }
 
 // Load guest data

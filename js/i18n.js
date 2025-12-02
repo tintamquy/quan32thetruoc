@@ -385,6 +385,14 @@ const languageSelectorStyles = `
     background: rgba(255, 215, 0, 0.2);
     border-left: 3px solid var(--gold-color);
 }
+
+@media (max-width: 480px) {
+    .language-selector {
+        top: auto;
+        bottom: 85px;
+        right: 16px;
+    }
+}
 `;
 
 if (!document.getElementById('language-selector-styles')) {

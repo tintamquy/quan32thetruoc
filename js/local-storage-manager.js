@@ -57,7 +57,7 @@ export function updateGuestStreak() {
     
     // Kiểm tra xem đã check-in hôm nay chưa
     if (lastCheckIn && isSameDay(lastCheckIn, now)) {
-        return data; // Đã check-in rồi
+        return { data, alreadyChecked: true };
     }
     
     // Kiểm tra streak có bị gián đoạn không
@@ -78,7 +78,7 @@ export function updateGuestStreak() {
     data.level = Math.floor(data.totalPoints / 1000) + 1;
     
     saveGuestData(data);
-    return data;
+    return { data, alreadyChecked: false };
 }
 
 // Kiểm tra xem 2 ngày có cùng ngày không
