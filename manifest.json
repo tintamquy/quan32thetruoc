@@ -1,7 +1,7 @@
 {
-  "name": "Quán 32 Thể Trược - Game Thanh Tịnh",
-  "short_name": "Quán 32 Thể Trược",
-  "description": "Web app game gamification giúp cai nghiện thủ dâm thông qua thiền định và quán tưởng 32 thể trược",
+  "name": "Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm",
+  "short_name": "Thanh Tịnh Dục Vọng",
+  "description": "Game miễn phí giúp cai nghiện thủ dâm và thanh tịnh dục vọng. Thiền định, quán tưởng 32 thể trược, mini-games và AI tư vấn.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a2e",

@@ -1,6 +1,11 @@
-# Quán 32 Thể Trược - Game Thanh Tịnh
+# Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm Miễn Phí
 
-Web app game gamification với giao diện 3D voxel/Minecraft-style để giúp người dùng cai nghiện thủ dâm thông qua thiền định, quán tưởng 32 thể trược, mini-games và hệ thống động viên/khen thưởng mạnh mẽ.
+**Game miễn phí giúp cai nghiện thủ dâm và thanh tịnh dục vọng** thông qua thiền định, quán tưởng 32 thể trược, mini-games trị liệu và AI tư vấn. Bắt đầu hành trình tự do ngay hôm nay!
+
+🌐 **Website**: https://quan32thetruoc.pages.dev  
+🎮 **Play Now**: Chơi ngay không cần đăng nhập  
+🧘 **AI Counselor**: Thầy Thích Nhất Hạnh tư vấn 24/7  
+💪 **Free**: Hoàn toàn miễn phí, không quảng cáo
 
 ## 🎮 Tính Năng
 
