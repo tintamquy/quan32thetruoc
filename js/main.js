@@ -446,6 +446,15 @@ function setupProfileModal() {
             profileModal.classList.add('hidden');
         });
     }
+
+    // Đóng khi bấm ra ngoài phần nội dung
+    if (profileModal) {
+        profileModal.addEventListener('click', (e) => {
+            if (e.target === profileModal) {
+                profileModal.classList.add('hidden');
+            }
+        });
+    }
 }
 
 // Load profile data
