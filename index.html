@@ -58,6 +58,10 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/game-ui.css">
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/preview.png">
+    <link rel="apple-touch-icon" href="/preview.png">
+    
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1a2e">
@@ -81,22 +85,22 @@
                 <button class="tab-btn" data-tab="signup">Đăng Ký</button>
             </div>
             
-            <div id="login-form" class="auth-form active">
+            <form id="login-form" class="auth-form active">
                 <input type="email" id="login-email" placeholder="Email" required>
                 <input type="password" id="login-password" placeholder="Mật khẩu" required>
-                <button id="login-btn" class="btn-primary">Đăng Nhập</button>
-                <button id="google-login-btn" class="btn-google">Đăng nhập với Google</button>
+                <button type="button" id="login-btn" class="btn-primary">Đăng Nhập</button>
+                <button type="button" id="google-login-btn" class="btn-google">Đăng nhập với Google</button>
                 <p id="login-error" class="error-message"></p>
-            </div>
+            </form>
             
-            <div id="signup-form" class="auth-form">
+            <form id="signup-form" class="auth-form">
                 <input type="text" id="signup-name" placeholder="Tên hiển thị" required>
                 <input type="email" id="signup-email" placeholder="Email" required>
                 <input type="password" id="signup-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required>
-                <button id="signup-btn" class="btn-primary">Đăng Ký</button>
-                <button id="google-signup-btn" class="btn-google">Đăng ký với Google</button>
+                <button type="button" id="signup-btn" class="btn-primary">Đăng Ký</button>
+                <button type="button" id="google-signup-btn" class="btn-google">Đăng ký với Google</button>
                 <p id="signup-error" class="error-message"></p>
-            </div>
+            </form>
         </div>
     </div>
 

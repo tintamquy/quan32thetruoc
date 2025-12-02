@@ -38,12 +38,35 @@ export function initAuth() {
             hideAuthModal();
             // Kiểm tra check-in hôm nay
             checkDailyCheckIn(user.uid);
+            
+            // Update UI buttons
+            updateAuthUIButtons(true);
         } else {
             currentUser = null;
             // Vẫn cho phép chơi, chỉ ẩn auth modal
             await loadGuestData();
+            
+            // Update UI buttons
+            updateAuthUIButtons(false);
         }
     });
+}
+
+// Update auth UI buttons
+function updateAuthUIButtons(isLoggedIn) {
+    const loginBtn = document.getElementById('login-prompt-btn');
+    const profileBtn = document.getElementById('profile-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (isLoggedIn) {
+        if (loginBtn) loginBtn.classList.add('hidden');
+        if (profileBtn) profileBtn.classList.remove('hidden');
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+    } else {
+        if (loginBtn) loginBtn.classList.remove('hidden');
+        if (profileBtn) profileBtn.classList.add('hidden');
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+    }
 }
 
 // Load guest data

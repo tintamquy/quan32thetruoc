@@ -427,24 +427,7 @@ if (loginPromptBtn) {
 }
 
 // Show/hide login button based on auth state
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { auth } from './firebase-config.js';
-
-onAuthStateChanged(auth, (user) => {
-    const loginBtn = document.getElementById('login-prompt-btn');
-    const profileBtn = document.getElementById('profile-btn');
-    const logoutBtn = document.getElementById('logout-btn');
-    
-    if (user) {
-        if (loginBtn) loginBtn.classList.add('hidden');
-        if (profileBtn) profileBtn.classList.remove('hidden');
-        if (logoutBtn) logoutBtn.classList.remove('hidden');
-    } else {
-        if (loginBtn) loginBtn.classList.remove('hidden');
-        if (profileBtn) profileBtn.classList.add('hidden');
-        if (logoutBtn) logoutBtn.classList.add('hidden');
-    }
-});
+// Được handle trong auth.js updateAuthUIButtons()
 
 // Logout
 const logoutBtn = document.getElementById('logout-btn');
@@ -456,16 +439,9 @@ if (logoutBtn) {
     });
 }
 
-// Khởi tạo game engine khi user đăng nhập
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { auth } from './firebase-config.js';
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Khởi tạo game engine
-        setTimeout(() => {
-            initGameEngine();
-        }, 500);
-    }
-});
+// Khởi tạo game engine khi user đăng nhập (hoặc guest)
+// Game engine sẽ được init trong initAuth() hoặc ngay khi load
+setTimeout(() => {
+    initGameEngine();
+}, 1000);
 
