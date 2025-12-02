@@ -1060,8 +1060,8 @@ body.immersive-mode .side-panel {
     margin: 20px;
     padding: 16px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(26, 26, 46, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .toggle-mode-btn {
@@ -1083,7 +1083,7 @@ body.immersive-mode .side-panel {
 .toggle-hint {
     margin: 0;
     font-size: 14px;
-    color: #4b5563;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .simple-mode-panel {
@@ -1091,9 +1091,10 @@ body.immersive-mode .side-panel {
     margin: 0 20px 30px;
     padding: 24px;
     border-radius: 24px;
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
+    background: rgba(15, 15, 30, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
 }
 
 .simple-hero {
@@ -1108,12 +1109,12 @@ body.immersive-mode .side-panel {
 .simple-hero h1 {
     font-size: 28px;
     margin-bottom: 8px;
-    color: var(--text-dark);
+    color: #fff;
 }
 
 .simple-hero p {
     margin: 0;
-    color: #4b5563;
+    color: rgba(255, 255, 255, 0.8);
     max-width: 520px;
 }
 
@@ -1153,10 +1154,10 @@ body.immersive-mode .side-panel {
 
 .feedback-section {
     grid-column: 1 / -1;
-    background: #f9fafb;
+    background: rgba(255, 255, 255, 0.06);
     border-radius: 18px;
     padding: 24px;
-    border: 1px solid rgba(15, 23, 42, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .feedback-form {
@@ -1172,9 +1173,9 @@ body.immersive-mode .side-panel {
     width: 100%;
     padding: 12px;
     border-radius: 10px;
-    border: 1px solid rgba(15, 23, 42, 0.15);
-    background: #ffffff;
-    color: var(--text-dark);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
     font-family: inherit;
 }
 
@@ -1205,7 +1206,7 @@ body.immersive-mode .side-panel {
     align-items: center;
     gap: 10px;
     font-size: 14px;
-    color: #374151;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .tam-quy-vow input {
@@ -1222,7 +1223,7 @@ body.immersive-mode .side-panel {
 .feedback-status {
     font-size: 14px;
     min-height: 18px;
-    color: #b45309;
+    color: #ffecb3;
 }
 
 .feedback-status.success {
@@ -1236,8 +1237,8 @@ body.immersive-mode .side-panel {
 .simple-card {
     padding: 18px;
     border-radius: 16px;
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.05);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1246,18 +1247,18 @@ body.immersive-mode .side-panel {
 .simple-card h3 {
     margin: 0;
     font-size: 18px;
-    color: #111827;
+    color: #ffd54f;
 }
 
 .simple-card p {
     margin: 0;
-    color: #4b5563;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .simple-card ul {
     margin: 0;
     padding-left: 18px;
-    color: #374151;
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.5;
 }
 
