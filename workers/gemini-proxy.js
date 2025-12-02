@@ -19,7 +19,8 @@ export default {
         // Verify origin (có thể thêm domain của bạn sau khi deploy)
         const origin = request.headers.get('Origin');
         const allowedOrigins = [
-            'https://quan32thetruoc.pages.dev',
+            'https://puremind.pages.dev',
+            'https://quan32thetruoc.pages.dev', // Keep for backward compatibility
             'http://localhost:8000',
             'http://localhost:3000',
             'http://localhost:8080',
