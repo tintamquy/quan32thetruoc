@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Web app game gamification giúp cai nghiện thủ dâm thông qua thiền định và quán tưởng 32 thể trược">
+    <title>Quán 32 Thể Trược - Game Thanh Tịnh</title>
+    
+    <!-- Three.js cho 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        window.firebase = { initializeApp, getAuth, getFirestore };
+    </script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/game-ui.css">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="voxel-loader"></div>
+            <p>Đang tải thế giới thanh tịnh...</p>
+        </div>
+    </div>
+
+        <!-- Auth Modal -->
+        <div id="auth-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Đăng Nhập / Đăng Ký</h2>
+            <div id="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Đăng Nhập</button>
+                <button class="tab-btn" data-tab="signup">Đăng Ký</button>
+            </div>
+            
+            <div id="login-form" class="auth-form active">
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Mật khẩu" required>
+                <button id="login-btn" class="btn-primary">Đăng Nhập</button>
+                <button id="google-login-btn" class="btn-google">Đăng nhập với Google</button>
+                <p id="login-error" class="error-message"></p>
+            </div>
+            
+            <div id="signup-form" class="auth-form">
+                <input type="text" id="signup-name" placeholder="Tên hiển thị" required>
+                <input type="email" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required>
+                <button id="signup-btn" class="btn-primary">Đăng Ký</button>
+                <button id="google-signup-btn" class="btn-google">Đăng ký với Google</button>
+                <p id="signup-error" class="error-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="hidden">
+        <!-- Top UI Bar -->
+        <div class="top-ui-bar">
+            <div class="streak-counter">
+                <span class="streak-icon">🔥</span>
+                <span id="streak-days" class="streak-number">0</span>
+                <span class="streak-label">Ngày</span>
+            </div>
+            <div class="user-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Điểm:</span>
+                    <span id="total-points" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Cấp:</span>
+                    <span id="user-level" class="stat-value">1</span>
+                </div>
+            </div>
+            <div class="user-menu">
+                <button id="login-prompt-btn" class="btn-icon" title="Đăng nhập để lưu tiến độ">🔐</button>
+                <button id="profile-btn" class="btn-icon hidden" title="Hồ sơ">👤</button>
+                <button id="logout-btn" class="btn-icon hidden" title="Đăng xuất">🚪</button>
+            </div>
+        </div>
+
+        <!-- 3D Canvas -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Side Panel - Mini Games -->
+        <div id="side-panel" class="side-panel">
+            <h3>Mini Games</h3>
+            <div class="game-buttons">
+                <button class="game-btn" data-game="meditation-32">
+                    <span class="game-icon">🧘</span>
+                    <span>Thiền 32 Thể Trược</span>
+                </button>
+                <button class="game-btn" data-game="memory">
+                    <span class="game-icon">🧩</span>
+                    <span>Memory Game</span>
+                </button>
+                <button class="game-btn" data-game="breathing">
+                    <span class="game-icon">💨</span>
+                    <span>Thở Sâu</span>
+                </button>
+                <button class="game-btn" data-game="body-scan">
+                    <span class="game-icon">👁️</span>
+                    <span>Quét Cơ Thể</span>
+                </button>
+                <button class="game-btn" data-game="whack-mole">
+                    <span class="game-icon">⚡</span>
+                    <span>Đánh Bay Dục Vọng</span>
+                </button>
+                <button class="game-btn" data-game="quiz">
+                    <span class="game-icon">📚</span>
+                    <span>Quiz Chính Pháp</span>
+                </button>
+                <button class="game-btn" data-game="typing">
+                    <span class="game-icon">⌨️</span>
+                    <span>Gõ Chữ Thanh Tịnh</span>
+                </button>
+                <button class="game-btn" data-game="color-match">
+                    <span class="game-icon">🎨</span>
+                    <span>Ghép Màu Thanh Tịnh</span>
+                </button>
+            </div>
+            <div class="therapy-tools-section">
+                <h4>🛠️ Công Cụ Trị Liệu</h4>
+                <div class="therapy-buttons">
+                    <button class="therapy-btn" data-therapy="urge-surfing">
+                        <span class="therapy-icon">🌊</span>
+                        <span>Urge Surfing</span>
+                    </button>
+                    <button class="therapy-btn" data-therapy="grounding">
+                        <span class="therapy-icon">🌍</span>
+                        <span>5-4-3-2-1 Grounding</span>
+                    </button>
+                    <button class="therapy-btn" data-therapy="relapse-prevention">
+                        <span class="therapy-icon">🛡️</span>
+                        <span>Phòng Ngừa Tái Nghiện</span>
+                    </button>
+                    <button class="therapy-btn" data-therapy="emergency">
+                        <span class="therapy-icon">🚨</span>
+                        <span>Giao Thức Khẩn Cấp</span>
+                    </button>
+                </div>
+            </div>
+            <div class="leaderboard-section">
+                <h4>🏆 Bảng Xếp Hạng Công Khai</h4>
+                <div id="public-leaderboard"></div>
+            </div>
+        </div>
+
+        <!-- Bottom UI -->
+        <div class="bottom-ui">
+            <button id="emergency-help-btn" class="emergency-btn">
+                🧘 Trò Chuyện Với Thầy Thích Nhất Hạnh
+            </button>
+            <button id="chat-toggle-btn" class="chat-toggle-btn">
+                💬 Chat
+            </button>
+        </div>
+
+        <!-- Chat Panel -->
+        <div id="chat-panel" class="chat-panel hidden">
+            <div class="chat-header">
+                <h3>Cộng Đồng Hỗ Trợ</h3>
+                <button id="chat-close-btn" class="close-btn">&times;</button>
+            </div>
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Nhắn tin khuyến khích mọi người..." maxlength="500">
+                <button id="chat-send-btn" class="btn-send">Gửi</button>
+            </div>
+        </div>
+
+        <!-- AI Counselor Modal -->
+        <div id="ai-counselor-modal" class="modal hidden">
+            <div class="modal-content ai-modal">
+                <span class="close-modal">&times;</span>
+                <h2>🧘 Thầy Thích Nhất Hạnh - Tư Vấn Khẩn Cấp</h2>
+                <div id="ai-chat-container" class="ai-chat-container">
+                    <div class="ai-message">
+                        <p>Xin chào con! Thầy Thích Nhất Hạnh ở đây để giúp con vượt qua cơn cuồng dục này. Hãy chia sẻ với thầy con đang cảm thấy thế nào?</p>
+                    </div>
+                </div>
+                <div class="ai-input-container">
+                    <textarea id="ai-input" placeholder="Viết tin nhắn của bạn..." rows="3"></textarea>
+                    <button id="ai-send-btn" class="btn-primary">Gửi</button>
+                </div>
+                <div class="ai-suggestions">
+                    <p>Hoặc thử một trong những mini-games này để phân tâm:</p>
+                    <div class="suggestion-buttons">
+                        <button class="suggestion-btn" data-game="breathing">Thở Sâu</button>
+                        <button class="suggestion-btn" data-game="meditation-32">Thiền 32 Thể Trược</button>
+                        <button class="suggestion-btn" data-game="body-scan">Quét Cơ Thể</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Modal Container -->
+        <div id="game-modal" class="game-modal hidden">
+            <div class="game-modal-content">
+                <button id="close-game-btn" class="close-game-btn">&times;</button>
+                <div id="game-content"></div>
+            </div>
+        </div>
+
+        <!-- Achievement Notification -->
+        <div id="achievement-notification" class="achievement-notification hidden">
+            <div class="achievement-content">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-text">
+                    <h3>THÀNH TỰU MỚI!</h3>
+                    <p id="achievement-name"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Check-in Modal -->
+        <div id="checkin-modal" class="modal">
+            <div class="modal-content checkin-modal">
+                <h2>🎉 Check-in Hôm Nay!</h2>
+                <div id="checkin-message" class="checkin-message"></div>
+                <div class="checkin-stats">
+                    <div class="checkin-stat">
+                        <span class="checkin-label">Streak hiện tại:</span>
+                        <span id="checkin-streak" class="checkin-value">0</span>
+                    </div>
+                    <div class="checkin-stat">
+                        <span class="checkin-label">Điểm nhận được:</span>
+                        <span id="checkin-points" class="checkin-value">+100</span>
+                    </div>
+                </div>
+                <button id="confirm-checkin-btn" class="btn-primary btn-large">Xác Nhận Check-in</button>
+            </div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="modal hidden">
+            <div class="modal-content profile-modal">
+                <span class="close-modal">&times;</span>
+                <h2>Hồ Sơ Của Bạn</h2>
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <div class="avatar-3d" id="profile-avatar-3d"></div>
+                    </div>
+                    <h3 id="profile-name"></h3>
+                    <div class="profile-stats-grid">
+                        <div class="profile-stat">
+                            <span class="stat-icon">🔥</span>
+                            <span class="stat-label">Streak hiện tại</span>
+                            <span id="profile-streak" class="stat-number">0</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-icon">⭐</span>
+                            <span class="stat-label">Streak dài nhất</span>
+                            <span id="profile-longest-streak" class="stat-number">0</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-icon">💎</span>
+                            <span class="stat-label">Tổng điểm</span>
+                            <span id="profile-total-points" class="stat-number">0</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-icon">📊</span>
+                            <span class="stat-label">Cấp độ</span>
+                            <span id="profile-level" class="stat-number">1</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-achievements">
+                    <h3>Thành Tựu</h3>
+                    <div id="achievements-list" class="achievements-grid"></div>
+                </div>
+                <div class="profile-badges">
+                    <h3>Huy Hiệu</h3>
+                    <div id="badges-list" class="badges-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/game-engine.js"></script>
+    <script type="module" src="js/gamification.js"></script>
+    <script type="module" src="js/ai-counselor.js"></script>
+    <script type="module" src="js/chat-system.js"></script>
+    <script type="module" src="js/mini-games/meditation-game.js"></script>
+    <script type="module" src="js/mini-games/memory-game.js"></script>
+    <script type="module" src="js/mini-games/breathing-game.js"></script>
+    <script type="module" src="js/mini-games/body-scan-game.js"></script>
+    <script type="module" src="js/mini-games/whack-mole-game.js"></script>
+    <script type="module" src="js/mini-games/quiz-game.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/encouragement-system.js"></script>
+    <script type="module" src="js/public-leaderboard.js"></script>
+    <script type="module" src="js/therapy-tools.js"></script>
+    <script type="module" src="js/relapse-prevention.js"></script>
+    <script type="module" src="js/daily-motivation.js"></script>
+    <script type="module" src="js/honor-system.js"></script>
+</body>
+</html>
+

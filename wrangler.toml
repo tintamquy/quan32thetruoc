@@ -1,0 +1,10 @@
+name = "gemini-proxy"
+main = "workers/gemini-proxy.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "gemini-proxy"
+
+[env.development]
+name = "gemini-proxy-dev"
+

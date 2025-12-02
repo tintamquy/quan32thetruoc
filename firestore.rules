@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{userId} {
+      // Cho phép đọc nếu đã đăng nhập
+      allow read: if request.auth != null;
+      
+      // Cho phép tạo/update nếu là chính user đó
+      allow create: if request.auth != null && 
+                       request.auth.uid == userId;
+      allow update: if request.auth != null && 
+                       request.auth.uid == userId;
+      allow delete: if request.auth != null && 
+                       request.auth.uid == userId;
+    }
+    
+    // Activities collection
+    match /activities/{activityId} {
+      // Cho phép đọc nếu đã đăng nhập
+      allow read: if request.auth != null;
+      
+      // Cho phép tạo nếu đã đăng nhập và userId khớp
+      allow create: if request.auth != null && 
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Không cho phép update/delete activities
+      allow update, delete: if false;
+    }
+    
+    // Chat collection
+    match /chat/{messageId} {
+      // Cho phép đọc nếu đã đăng nhập
+      allow read: if request.auth != null;
+      
+      // Cho phép tạo nếu đã đăng nhập và userId khớp
+      allow create: if request.auth != null && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.message is string &&
+                       request.resource.data.message.size() > 0 &&
+                       request.resource.data.message.size() <= 500;
+      
+      // Cho phép update likes nếu đã đăng nhập
+      allow update: if request.auth != null && 
+                       request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['likes', 'likedBy']);
+      
+      // Không cho phép delete messages
+      allow delete: if false;
+    }
+    
+    // AI Conversations collection
+    match /ai_conversations/{conversationId} {
+      // Chỉ cho phép đọc nếu là chính user đó
+      allow read: if request.auth != null && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Cho phép tạo nếu đã đăng nhập và userId khớp
+      allow create: if request.auth != null && 
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Không cho phép update/delete
+      allow update, delete: if false;
+    }
+  }
+}
+
