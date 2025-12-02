@@ -281,117 +281,57 @@ export async function initI18n() {
 
 // Create language selector UI
 function createLanguageSelector() {
-    const selector = document.createElement('div');
-    selector.id = 'language-selector';
-    selector.className = 'language-selector';
-    selector.innerHTML = `
-        <button id="lang-btn" class="lang-btn">
-            ${LANGUAGES[currentLanguage].flag} ${LANGUAGES[currentLanguage].name}
-        </button>
-        <div id="lang-dropdown" class="lang-dropdown hidden">
-            ${Object.entries(LANGUAGES).map(([code, lang]) => `
-                <button class="lang-option ${code === currentLanguage ? 'active' : ''}" 
-                        data-lang="${code}">
-                    ${lang.flag} ${lang.name}
-                </button>
-            `).join('')}
-        </div>
-    `;
+    const container = document.getElementById('language-settings');
+    if (!container) return;
     
-    document.body.appendChild(selector);
+    const label = document.createElement('label');
+    label.className = 'language-settings-label';
+    label.textContent = 'Ngôn ngữ / Language';
     
-    // Event listeners
-    document.getElementById('lang-btn').addEventListener('click', () => {
-        document.getElementById('lang-dropdown').classList.toggle('hidden');
+    const select = document.createElement('select');
+    select.id = 'language-select';
+    select.className = 'language-select';
+    
+    Object.entries(LANGUAGES).forEach(([code, lang]) => {
+        const option = document.createElement('option');
+        option.value = code;
+        option.textContent = `${lang.flag} ${lang.name}`;
+        if (code === currentLanguage) option.selected = true;
+        select.appendChild(option);
     });
     
-    document.querySelectorAll('.lang-option').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const langCode = btn.dataset.lang;
-            setLanguage(langCode);
-            document.getElementById('lang-dropdown').classList.add('hidden');
-            // Reload page to apply all changes
-            window.location.reload();
-        });
-    });
+    container.appendChild(label);
+    container.appendChild(select);
     
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-        if (!selector.contains(e.target)) {
-            document.getElementById('lang-dropdown').classList.add('hidden');
-        }
+    select.addEventListener('change', () => {
+        const langCode = select.value;
+        setLanguage(langCode);
+        // Reload page to apply all changes
+        window.location.reload();
     });
 }
 
 // CSS for language selector
 const languageSelectorStyles = `
-.language-selector {
-    position: fixed;
-    top: 90px;
-    right: 20px;
-    z-index: 10011;
-}
-
-.lang-btn {
-    padding: 10px 15px;
-    background: rgba(26, 26, 46, 0.95);
-    border: 2px solid var(--gold-color);
-    border-radius: 8px;
-    color: var(--text-light);
+.language-settings-label {
+    display: block;
+    margin-bottom: 6px;
     font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
 }
 
-.lang-btn:hover {
-    background: rgba(26, 26, 46, 1);
-    transform: scale(1.05);
-}
-
-.lang-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 10px;
-    background: rgba(26, 26, 46, 0.98);
-    border: 2px solid var(--gold-color);
-    border-radius: 10px;
-    padding: 10px;
-    min-width: 200px;
-    max-height: 400px;
-    overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-}
-
-.lang-option {
+.language-select {
     width: 100%;
-    padding: 12px 15px;
-    background: transparent;
-    border: none;
-    border-radius: 8px;
-    color: var(--text-light);
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 5px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    font-family: inherit;
 }
 
-.lang-option:hover {
-    background: rgba(255, 215, 0, 0.1);
-}
-
-.lang-option.active {
-    background: rgba(255, 215, 0, 0.2);
-    border-left: 3px solid var(--gold-color);
-}
-
-@media (max-width: 480px) {
-    .language-selector {
-        top: auto;
-        bottom: 85px;
-        right: 16px;
-    }
+.language-select:focus {
+    outline: none;
+    border-color: var(--gold-color);
 }
 `;
 
