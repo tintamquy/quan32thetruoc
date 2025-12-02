@@ -2,15 +2,12 @@
 // SEO OPTIMIZER - Tối ưu SEO và Social Sharing
 // ============================================
 
-// Update meta tags dynamically
+// Update meta tags dynamically (will be called by i18n)
 export function updateSEOTags() {
-    // Update title
-    document.title = 'Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm Miễn Phí | Quán 32 Thể Trược';
-    
-    // Update meta description
-    updateMetaTag('description', 
-        'Game miễn phí giúp cai nghiện thủ dâm và thanh tịnh dục vọng. Thiền định, quán tưởng 32 thể trược, mini-games và AI tư vấn. Bắt đầu hành trình tự do ngay hôm nay!'
-    );
+    // This function is now handled by i18n.js
+    // Keeping for backward compatibility
+    // i18n.js will handle SEO updates automatically
+}
     
     // Update keywords
     updateMetaTag('keywords',

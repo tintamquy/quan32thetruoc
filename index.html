@@ -16,10 +16,10 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://quan32thetruoc.pages.dev/">
+    <meta property="og:url" content="https://puremind.pages.dev/">
     <meta property="og:title" content="Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm Miễn Phí">
     <meta property="og:description" content="Game miễn phí giúp cai nghiện thủ dâm và thanh tịnh dục vọng. Thiền định, quán tưởng 32 thể trược, mini-games và AI tư vấn. Bắt đầu hành trình tự do ngay hôm nay!">
-    <meta property="og:image" content="https://quan32thetruoc.pages.dev/preview.png">
+    <meta property="og:image" content="https://puremind.pages.dev/preview.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm">
@@ -28,10 +28,10 @@
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://quan32thetruoc.pages.dev/">
+    <meta name="twitter:url" content="https://puremind.pages.dev/">
     <meta name="twitter:title" content="Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm Miễn Phí">
     <meta name="twitter:description" content="Game miễn phí giúp cai nghiện thủ dâm và thanh tịnh dục vọng. Thiền định, quán tưởng 32 thể trược, mini-games và AI tư vấn.">
-    <meta name="twitter:image" content="https://quan32thetruoc.pages.dev/preview.png">
+    <meta name="twitter:image" content="https://puremind.pages.dev/preview.png">
     <meta name="twitter:image:alt" content="Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm">
     
     <!-- Additional Meta Tags -->
@@ -41,7 +41,7 @@
     <meta name="apple-mobile-web-app-title" content="Thanh Tịnh Dục Vọng">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://quan32thetruoc.pages.dev/">
+    <link rel="canonical" href="https://puremind.pages.dev/">
     
     <!-- Three.js cho 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -345,10 +345,13 @@
     <script type="module" src="js/daily-motivation.js"></script>
     <script type="module" src="js/honor-system.js"></script>
     <script type="module" src="js/seo-optimizer.js"></script>
+    <script type="module" src="js/i18n.js"></script>
     <script type="module">
-        // Initialize SEO on load
-        import { updateSEOTags } from './js/seo-optimizer.js';
-        updateSEOTags();
+        // Initialize i18n first, then SEO
+        import { initI18n } from './js/i18n.js';
+        initI18n().then(() => {
+            // SEO will be updated by i18n
+        });
     </script>
 </body>
 </html>

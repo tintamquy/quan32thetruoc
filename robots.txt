@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://quan32thetruoc.pages.dev/sitemap.xml
+Sitemap: https://puremind.pages.dev/sitemap.xml
 
 # Disallow admin or private areas if any
 # Disallow: /admin/
