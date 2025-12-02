@@ -321,6 +321,5 @@ if (!document.getElementById('quiz-game-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { initQuizGame };
+// Export đã có ở đầu file với export function
 

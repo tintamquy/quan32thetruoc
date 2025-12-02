@@ -239,6 +239,5 @@ if (!document.getElementById('memory-game-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { initMemoryGame };
+// Export đã có ở đầu file với export function
 

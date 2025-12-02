@@ -352,6 +352,5 @@ if (!document.getElementById('therapy-tools-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { initUrgeSurfing, initColdShowerReminder, initGroundingTechnique };
+// Exports đã có ở đầu file với export function
 

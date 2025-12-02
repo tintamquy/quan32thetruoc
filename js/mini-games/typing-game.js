@@ -251,5 +251,5 @@ if (!document.getElementById('typing-game-styles')) {
     document.head.appendChild(style);
 }
 
-export { initTypingGame };
+// Export đã có ở đầu file với export function
 

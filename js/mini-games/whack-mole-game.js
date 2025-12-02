@@ -280,6 +280,5 @@ if (!document.getElementById('whack-mole-game-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { initWhackMoleGame };
+// Export đã có ở đầu file với export function
 

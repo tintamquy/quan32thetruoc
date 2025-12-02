@@ -420,6 +420,5 @@ if (!document.getElementById('honor-system-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { showHallOfFame, showWeeklyChampion };
+// Exports đã có ở đầu file với export function
 

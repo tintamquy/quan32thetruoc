@@ -193,6 +193,3 @@ function speakGuidance(index) {
     }
 }
 
-// Export để sử dụng ở file khác
-export { initMeditationGame };
-

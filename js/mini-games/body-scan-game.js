@@ -268,6 +268,5 @@ if (!document.getElementById('body-scan-game-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { initBodyScanGame };
+// Export đã có ở đầu file với export function
 

@@ -8,39 +8,6 @@ export function updateSEOTags() {
     // Keeping for backward compatibility
     // i18n.js will handle SEO updates automatically
 }
-    
-    // Update keywords
-    updateMetaTag('keywords',
-        'cai nghiện thủ dâm, thanh tịnh dục vọng, game cai nghiện, thiền định, quán 32 thể trược, nofap, no porn, tự do dục vọng, rèn luyện ý chí, cai nghiện miễn phí'
-    );
-    
-    // Open Graph tags
-    updateMetaTag('og:title', 'Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm Miễn Phí');
-    updateMetaTag('og:description', 
-        'Game miễn phí giúp cai nghiện thủ dâm và thanh tịnh dục vọng. Thiền định, quán tưởng 32 thể trược, mini-games và AI tư vấn. Bắt đầu hành trình tự do ngay hôm nay!'
-    );
-    updateMetaTag('og:image', getPreviewImageUrl());
-    updateMetaTag('og:url', window.location.href);
-    updateMetaTag('og:type', 'website');
-    updateMetaTag('og:site_name', 'Thanh Tịnh Dục Vọng');
-    
-    // Twitter Cards
-    updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:title', 'Thanh Tịnh Dục Vọng - Game Cai Nghiện Thủ Dâm Miễn Phí');
-    updateMetaTag('twitter:description',
-        'Game miễn phí giúp cai nghiện thủ dâm và thanh tịnh dục vọng. Thiền định, quán tưởng 32 thể trược, mini-games và AI tư vấn.'
-    );
-    updateMetaTag('twitter:image', getPreviewImageUrl());
-    
-    // Additional SEO tags
-    updateMetaTag('author', 'Thanh Tịnh Dục Vọng');
-    updateMetaTag('robots', 'index, follow');
-    updateMetaTag('language', 'Vietnamese');
-    updateMetaTag('revisit-after', '7 days');
-    
-    // Add structured data (JSON-LD)
-    addStructuredData();
-}
 
 // Update meta tag
 function updateMetaTag(name, content) {

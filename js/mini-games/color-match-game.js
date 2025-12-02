@@ -193,5 +193,5 @@ if (!document.getElementById('color-match-game-styles')) {
     document.head.appendChild(style);
 }
 
-export { initColorMatchGame };
+// Export đã có ở đầu file với export function
 

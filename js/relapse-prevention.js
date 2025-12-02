@@ -249,6 +249,5 @@ if (!document.getElementById('relapse-prevention-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { checkTriggers, showRelapsePreventionPlan, showEmergencyProtocol };
+// Exports đã có ở đầu file với export function
 

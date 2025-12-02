@@ -266,6 +266,5 @@ if (!document.getElementById('breathing-game-styles')) {
     document.head.appendChild(style);
 }
 
-// Export
-export { initBreathingGame };
+// Export đã có ở đầu file với export function
 

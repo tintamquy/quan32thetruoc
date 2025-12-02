@@ -18,7 +18,6 @@ import { initColorMatchGame } from './mini-games/color-match-game.js';
 import { loadPublicLeaderboard, startLeaderboardAutoRefresh } from './public-leaderboard.js';
 import { initUrgeSurfing, initGroundingTechnique } from './therapy-tools.js';
 import { showRelapsePreventionPlan, showEmergencyProtocol } from './relapse-prevention.js';
-import { getCurrentUser } from './auth.js';
 
 // Game handlers
 const gameHandlers = {
