@@ -11,6 +11,10 @@ import { db } from './firebase-config.js';
 const WORKER_URL = 'https://gemini-proxy.phatda.workers.dev';
 
 let conversationHistory = [];
+let aiCooldownUntil = 0;
+let aiSendBtnRef = null;
+let aiInputRef = null;
+let isSendingAI = false;
 
 // Khởi tạo AI counselor
 export function initAICounselor() {
@@ -18,6 +22,8 @@ export function initAICounselor() {
     const aiModal = document.getElementById('ai-counselor-modal');
     const aiSendBtn = document.getElementById('ai-send-btn');
     const aiInput = document.getElementById('ai-input');
+    aiSendBtnRef = aiSendBtn;
+    aiInputRef = aiInput;
     const closeModal = aiModal?.querySelector('.close-modal');
     
     if (emergencyBtn) {
@@ -106,10 +112,22 @@ function hideAICounselor() {
 
 // Gửi message
 async function sendAIMessage() {
-    const input = document.getElementById('ai-input');
+    if (isSendingAI) return;
+    
+    const input = aiInputRef || document.getElementById('ai-input');
     const message = input?.value.trim();
     
     if (!message) return;
+    
+    const now = Date.now();
+    if (now < aiCooldownUntil) {
+        const waitSeconds = Math.ceil((aiCooldownUntil - now) / 1000);
+        addAIMessage(`Thầy đang tiếp thêm năng lượng. Hãy thở sâu và thử lại sau ${waitSeconds}s.`, 'ai');
+        return;
+    }
+    
+    isSendingAI = true;
+    if (aiSendBtnRef) aiSendBtnRef.disabled = true;
     
     // Clear input
     input.value = '';
@@ -139,12 +157,20 @@ async function sendAIMessage() {
     } catch (error) {
         console.error('Lỗi gọi AI:', error);
         removeAIMessage(loadingId);
-        addAIMessage('Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại sau hoặc thử một mini-game để phân tâm.', 'ai');
+        if (error?.code === 429 || error?.message === 'RATE_LIMIT') {
+            const waitSeconds = Math.ceil((aiCooldownUntil - Date.now()) / 1000);
+            addAIMessage(`Thầy đang nhận rất nhiều lời cầu cứu. Con hãy đặt tay lên ngực, hít sâu và thử lại sau ${waitSeconds}s.`, 'ai');
+        } else {
+            addAIMessage('Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại sau hoặc thử một mini-game để phân tâm.', 'ai');
+        }
+    } finally {
+        if (aiSendBtnRef) aiSendBtnRef.disabled = false;
+        isSendingAI = false;
     }
 }
 
 // Gọi Gemini API qua Cloudflare Worker
-async function callGeminiAPI(userMessage) {
+async function callGeminiAPI(userMessage, attempt = 1, appendHistory = true) {
     const user = getCurrentUser();
     if (!user) {
         throw new Error('Chưa đăng nhập');
@@ -166,10 +192,12 @@ Hãy trả lời bằng tiếng Việt, ngắn gọn nhưng đầy đủ thông 
     const fullPrompt = `${systemPrompt}\n\nNgười dùng: ${userMessage}`;
     
     // Thêm vào conversation history
-    conversationHistory.push({
-        role: 'user',
-        parts: [{ text: userMessage }]
-    });
+    if (appendHistory) {
+        conversationHistory.push({
+            role: 'user',
+            parts: [{ text: userMessage }]
+        });
+    }
     
     try {
         const response = await fetch(WORKER_URL, {
@@ -184,6 +212,16 @@ Hãy trả lời bằng tiếng Việt, ngắn gọn nhưng đầy đủ thông 
         });
         
         if (!response.ok) {
+            if (response.status === 429) {
+                if (attempt < 2) {
+                    await waitFor(2000);
+                    return callGeminiAPI(userMessage, attempt + 1, false);
+                }
+                aiCooldownUntil = Date.now() + 15000;
+                const error = new Error('RATE_LIMIT');
+                error.code = 429;
+                throw error;
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
@@ -284,4 +322,8 @@ async function logAIConversation(userMessage, aiResponse) {
 
 // Export
 export { showAICounselor, hideAICounselor };
+
+function waitFor(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 

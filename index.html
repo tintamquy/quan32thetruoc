@@ -68,7 +68,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1a2e">
 </head>
-<body>
+<body class="simple-mode">
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
@@ -88,17 +88,17 @@
             </div>
             
             <form id="login-form" class="auth-form active">
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-password" placeholder="Mật khẩu" required>
+                <input type="email" id="login-email" placeholder="Email" autocomplete="email" required>
+                <input type="password" id="login-password" placeholder="Mật khẩu" autocomplete="current-password" required>
                 <button type="button" id="login-btn" class="btn-primary">Đăng Nhập</button>
                 <button type="button" id="google-login-btn" class="btn-google">Đăng nhập với Google</button>
                 <p id="login-error" class="error-message"></p>
             </form>
             
             <form id="signup-form" class="auth-form">
-                <input type="text" id="signup-name" placeholder="Tên hiển thị" required>
-                <input type="email" id="signup-email" placeholder="Email" required>
-                <input type="password" id="signup-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required>
+                <input type="text" id="signup-name" placeholder="Tên hiển thị" autocomplete="nickname" required>
+                <input type="email" id="signup-email" placeholder="Email" autocomplete="email" required>
+                <input type="password" id="signup-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" autocomplete="new-password" required>
                 <button type="button" id="signup-btn" class="btn-primary">Đăng Ký</button>
                 <button type="button" id="google-signup-btn" class="btn-google">Đăng ký với Google</button>
                 <p id="signup-error" class="error-message"></p>
@@ -129,6 +129,51 @@
                 <button id="login-prompt-btn" class="btn-icon" title="Đăng nhập để lưu tiến độ">🔐</button>
                 <button id="profile-btn" class="btn-icon hidden" title="Hồ sơ">👤</button>
                 <button id="logout-btn" class="btn-icon hidden" title="Đăng xuất">🚪</button>
+            </div>
+        </div>
+
+        <div class="experience-toggle">
+            <button id="toggle-experience-btn" class="toggle-mode-btn">
+                🌤️ Đang ở chế độ Dễ Dàng - Xem thế giới 3D
+            </button>
+            <p class="toggle-hint">Chạm vào một nút bên dưới để hạ nhiệt ngay lập tức.</p>
+        </div>
+
+        <div id="simple-mode-panel" class="simple-mode-panel">
+            <div class="simple-hero">
+                <div>
+                    <h1>Hít sâu, thả lỏng, con đang an toàn.</h1>
+                    <p>Chọn một hành động đơn giản để đưa tâm trở về và làm dịu cơn nghiện.</p>
+                </div>
+                <div class="simple-breathing">
+                    <button class="calm-action primary" data-quick-game="breathing">💨 Thở 60 giây</button>
+                    <button class="calm-action" data-quick-game="meditation-32">🧘 Quán 32 thể trược</button>
+                    <button class="calm-action" data-quick-therapy="grounding">🌍 Grounding 5-4-3-2-1</button>
+                </div>
+            </div>
+            <div class="simple-grid">
+                <div class="simple-card">
+                    <h3>🔥 Cấp cứu dục vọng</h3>
+                    <p>Khi cơn ham muốn quá mạnh, hãy gọi Thầy hoặc đọc phác đồ khẩn.</p>
+                    <button id="simple-ai-btn" class="sos-btn">🧘 Gọi Thầy Thích Nhất Hạnh</button>
+                    <button class="ghost-btn" data-quick-therapy="emergency">📜 Xem phác đồ khẩn</button>
+                </div>
+                <div class="simple-card">
+                    <h3>🎯 Mục tiêu hôm nay</h3>
+                    <ul>
+                        <li>Hít sâu 10 nhịp</li>
+                        <li>Gọi tên cảm xúc thật</li>
+                        <li>Thực hành 1 mini-game</li>
+                    </ul>
+                    <button class="ghost-btn" data-quick-game="memory">🧩 Chơi mini-game nhẹ</button>
+                </div>
+                <div class="simple-card">
+                    <h3>💪 Đổi năng lượng</h3>
+                    <p>Làm việc khiến cơ thể chuyển động để xua tan thôi thúc.</p>
+                    <button class="ghost-btn" data-quick-game="typing">⌨️ Gõ chữ thanh tịnh</button>
+                    <button class="ghost-btn" data-quick-game="whack-mole">⚡ Đánh bay dục vọng</button>
+                    <button class="ghost-btn" data-quick-therapy="urge-surfing">🌊 Urge Surfing 3 phút</button>
+                </div>
             </div>
         </div>
 

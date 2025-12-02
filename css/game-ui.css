@@ -932,3 +932,209 @@
     }
 }
 
+/* ============================================
+   SIMPLE MODE - TRẢI NGHIỆM DỄ DÀNG
+   ============================================ */
+
+body.simple-mode #game-canvas {
+    display: none;
+}
+
+body.simple-mode .side-panel {
+    display: none;
+}
+
+body.simple-mode #simple-mode-panel {
+    display: block;
+}
+
+body.immersive-mode #game-canvas {
+    display: block;
+}
+
+body.immersive-mode .side-panel {
+    display: block;
+}
+
+.experience-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 20px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(26, 26, 46, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggle-mode-btn {
+    border: none;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ffd54f, #ff9800);
+    color: #1a1a2e;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.toggle-mode-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 152, 0, 0.25);
+}
+
+.toggle-hint {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.simple-mode-panel {
+    display: none;
+    margin: 0 20px 30px;
+    padding: 24px;
+    border-radius: 24px;
+    background: rgba(15, 15, 30, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+}
+
+.simple-hero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.simple-hero h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.simple-hero p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 520px;
+}
+
+.simple-breathing {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.calm-action {
+    border: none;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.calm-action.primary {
+    background: linear-gradient(135deg, #4caf50, #8bc34a);
+}
+
+.calm-action:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.simple-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.simple-card {
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.simple-card h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #ffd54f;
+}
+
+.simple-card p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.simple-card ul {
+    margin: 0;
+    padding-left: 18px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.5;
+}
+
+.sos-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    background: linear-gradient(135deg, #ff5252, #ff1744);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 12px 25px rgba(255, 23, 68, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sos-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 35px rgba(255, 23, 68, 0.5);
+}
+
+.ghost-btn {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: transparent;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.ghost-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 768px) {
+    .experience-toggle {
+        margin: 10px;
+        padding: 12px;
+    }
+    
+    .simple-mode-panel {
+        margin: 0 10px 20px;
+        padding: 18px;
+    }
+    
+    .simple-hero h1 {
+        font-size: 22px;
+    }
+    
+    .simple-breathing {
+        justify-content: flex-start;
+    }
+}
+

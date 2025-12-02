@@ -6,6 +6,7 @@
 let scene, camera, renderer, controls;
 let character, buildings = [];
 let raycaster, mouse;
+let defaultCameraPosition;
 
 // Khởi tạo 3D scene
 export function initGameEngine() {
@@ -26,6 +27,7 @@ export function initGameEngine() {
     );
     camera.position.set(0, 10, 20);
     camera.lookAt(0, 0, 0);
+    defaultCameraPosition = new THREE.Vector3(0, 12, 20);
     
     // Tạo renderer
     renderer = new THREE.WebGLRenderer({ 
@@ -334,16 +336,11 @@ function onMouseMove(event) {
 function animate() {
     requestAnimationFrame(animate);
     
-    // Rotate character
-    if (character) {
-        character.rotation.y += 0.01;
+    // Nhẹ nhàng hướng camera về trung tâm để tránh gây chóng mặt
+    if (camera) {
+        camera.position.lerp(defaultCameraPosition, 0.02);
+        camera.lookAt(0, 0, 0);
     }
-    
-    // Rotate camera around scene
-    const time = Date.now() * 0.0005;
-    camera.position.x = Math.cos(time) * 25;
-    camera.position.z = Math.sin(time) * 25;
-    camera.lookAt(0, 0, 0);
     
     renderer.render(scene, camera);
 }

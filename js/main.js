@@ -4,7 +4,7 @@
 
 import { initAuth, getCurrentUser } from './auth.js';
 import { initGameEngine } from './game-engine.js';
-import { initAICounselor } from './ai-counselor.js';
+import { initAICounselor, showAICounselor } from './ai-counselor.js';
 import { initChatSystem, cleanupChat } from './chat-system.js';
 import { updateDailyCheckIn } from './gamification.js';
 import { initMeditationGame } from './mini-games/meditation-game.js';
@@ -31,6 +31,9 @@ const gameHandlers = {
     'color-match': initColorMatchGame
 };
 
+let immersiveModeEnabled = false;
+let gameEngineInitialized = false;
+
 // Khởi tạo app
 document.addEventListener('DOMContentLoaded', () => {
     // Ẩn loading screen sau khi load xong
@@ -41,11 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
     
+    // Khởi tạo chế độ trải nghiệm
+    initExperienceModes();
+    
     // Khởi tạo auth
     initAuth();
-    
-    // Khởi tạo game engine (sau khi user đăng nhập)
-    // Sẽ được gọi trong auth.js khi user đăng nhập
     
     // Khởi tạo AI counselor
     initAICounselor();
@@ -89,6 +92,101 @@ function setupEventListeners() {
         const gameName = e.detail.gameName;
         openGame(gameName);
     });
+}
+
+// Simple mode & immersive mode handling
+function initExperienceModes() {
+    const savedMode = localStorage.getItem('experienceMode') || 'simple';
+    immersiveModeEnabled = savedMode === 'immersive';
+    updateExperienceMode();
+    setupSimpleModeActions();
+}
+
+function setupSimpleModeActions() {
+    const toggleBtn = document.getElementById('toggle-experience-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            immersiveModeEnabled = !immersiveModeEnabled;
+            localStorage.setItem('experienceMode', immersiveModeEnabled ? 'immersive' : 'simple');
+            updateExperienceMode();
+        });
+    }
+    
+    const quickGameButtons = document.querySelectorAll('[data-quick-game]');
+    quickGameButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const gameName = btn.dataset.quickGame;
+            if (gameName) {
+                openGame(gameName);
+            }
+        });
+    });
+    
+    const quickTherapyButtons = document.querySelectorAll('[data-quick-therapy]');
+    quickTherapyButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.quickTherapy;
+            handleQuickTherapy(action);
+        });
+    });
+    
+    const simpleAiBtn = document.getElementById('simple-ai-btn');
+    if (simpleAiBtn) {
+        simpleAiBtn.addEventListener('click', () => {
+            const user = getCurrentUser();
+            if (user) {
+                showAICounselor();
+            } else {
+                const authModal = document.getElementById('auth-modal');
+                if (authModal) authModal.classList.remove('hidden');
+                alert('Đăng nhập để Thầy có thể đồng hành cùng bạn một cách an toàn.');
+            }
+        });
+    }
+}
+
+function updateExperienceMode() {
+    const body = document.body;
+    const toggleBtn = document.getElementById('toggle-experience-btn');
+    
+    if (!body) return;
+    
+    if (immersiveModeEnabled) {
+        body.classList.remove('simple-mode');
+        body.classList.add('immersive-mode');
+        if (toggleBtn) {
+            toggleBtn.textContent = '🌌 Đang ở chế độ 3D - Quay lại chế độ đơn giản';
+        }
+        ensureGameEngine();
+    } else {
+        body.classList.add('simple-mode');
+        body.classList.remove('immersive-mode');
+        if (toggleBtn) {
+            toggleBtn.textContent = '🌤️ Đang ở chế độ Dễ Dàng - Xem thế giới 3D';
+        }
+    }
+}
+
+function ensureGameEngine() {
+    if (gameEngineInitialized) return;
+    initGameEngine();
+    gameEngineInitialized = true;
+}
+
+function handleQuickTherapy(action) {
+    switch (action) {
+        case 'grounding':
+            initGroundingTechnique();
+            break;
+        case 'urge-surfing':
+            initUrgeSurfing();
+            break;
+        case 'emergency':
+            showEmergencyProtocol();
+            break;
+        default:
+            break;
+    }
 }
 
 // Setup auth modal
@@ -438,10 +536,4 @@ if (logoutBtn) {
         cleanupChat();
     });
 }
-
-// Khởi tạo game engine khi user đăng nhập (hoặc guest)
-// Game engine sẽ được init trong initAuth() hoặc ngay khi load
-setTimeout(() => {
-    initGameEngine();
-}, 1000);
 
